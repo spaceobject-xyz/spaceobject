@@ -57,6 +57,9 @@ export class ExactEvmScheme extends X402ExactEvmScheme {
           ...(assetInfo.assetTransferMethod && {
             assetTransferMethod: assetInfo.assetTransferMethod,
           }),
+          ...(assetInfo.supportsEip2612 && {
+            supportsEip2612: assetInfo.supportsEip2612,
+          }),
         },
       };
     });
