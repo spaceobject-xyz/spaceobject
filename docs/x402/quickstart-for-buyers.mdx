@@ -49,6 +49,10 @@ const signer = privateKeyToAccount(
 
 Create an `x402Client`, register the EVM scheme for the 0G network you target, and wrap `fetch` so payments are handled automatically.
 
+### For EIP-3009 tokens (e.g. USDC.e)
+
+If the token supports native `transferWithAuthorization` (EIP-3009), a simple signer is sufficient:
+
 ```ts client.ts
 import { x402Client, x402HTTPClient } from "@x402/core/client";
 import { ExactEvmScheme } from "@x402/evm/exact/client";
@@ -56,6 +60,31 @@ import { wrapFetchWithPayment } from "@x402/fetch";
 
 const client = new x402Client();
 client.register("eip155:16661", new ExactEvmScheme(signer));
+
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
+```
+
+### For any ERC-20 token (Permit2)
+
+If the seller advertises `erc20ApprovalGasSponsoring`, the client needs additional capabilities (`signTransaction`, `getTransactionCount`, `estimateFeesPerGas`) to sign raw approval transactions. Wrap the signer with a `publicClient`:
+
+```ts client.ts
+import { x402Client, x402HTTPClient } from "@x402/core/client";
+import { ExactEvmScheme } from "@x402/evm/exact/client";
+import { toClientEvmSigner } from "@x402/evm";
+import { wrapFetchWithPayment } from "@x402/fetch";
+import { createPublicClient, http } from "viem";
+import { zeroGMainnet } from "viem/chains";
+
+const publicClient = createPublicClient({
+  chain: zeroGMainnet,
+  transport: http(process.env.ZEROG_RPC_URL),
+});
+
+const clientSigner = toClientEvmSigner(signer, publicClient);
+
+const client = new x402Client();
+client.register("eip155:16661", new ExactEvmScheme(clientSigner));
 
 const fetchWithPayment = wrapFetchWithPayment(fetch, client);
 ```

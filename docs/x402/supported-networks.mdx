@@ -16,12 +16,16 @@ The Herald Protocol facilitator supports the following networks and tokens. Netw
 
 ## Tokens
 
-| Network | Asset | Symbol | Address | Decimals |
-| --- | --- | --- | --- | --- |
-| `eip155:16661` | Bridged USDC | USDC.e | `0x1f3aa82227281ca364bfb3d253b0f1af1da6473e` | 6 |
-| `eip155:16602` | — | — | — | — |
-| `eip155:8453` | USD Coin | USDC | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | 6 |
-| `eip155:84532` | USD Coin | USDC | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` | 6 |
+| Network | Asset | Symbol | Address | Decimals | Transfer Method |
+| --- | --- | --- | --- | --- | --- |
+| `eip155:16661` | Bridged USDC | USDC.e | `0x1f3aa82227281ca364bfb3d253b0f1af1da6473e` | 6 | EIP-3009 + Permit2 |
+| `eip155:16602` | — | — | — | — | — |
+| `eip155:8453` | USD Coin | USDC | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | 6 | EIP-3009 + Permit2 |
+| `eip155:84532` | USD Coin | USDC | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` | 6 | EIP-3009 + Permit2 |
+
+<Note>
+  **Any ERC-20 token** can be used as a payment token via the Permit2 path, even if it doesn't natively support EIP-3009. The facilitator sponsors gas for the approval transaction. See [Quickstart for Sellers](/x402/quickstart-for-sellers) for how to advertise this support.
+</Note>
 
 <Note>
   0G testnet has no official stablecoin yet. A Herald Protocol EIP-3009-compatible test token is on the roadmap so the dev loop works end-to-end without a mainnet wallet.

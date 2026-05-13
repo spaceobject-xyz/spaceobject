@@ -36,6 +36,31 @@ Query `/supported` at runtime to get the authoritative list:
 curl https://facilitator.heraldprotocol.xyz/supported
 ```
 
+## Gas sponsoring extensions
+
+The facilitator supports two gas sponsoring extensions that enable **gasless Permit2 onboarding** for any ERC-20 token:
+
+| Extension | Key | When to use |
+| --- | --- | --- |
+| **EIP-2612 Gas Sponsoring** | `eip2612GasSponsoring` | Tokens that implement EIP-2612 (preferred). |
+| **ERC-20 Approval Gas Sponsoring** | `erc20ApprovalGasSponsoring` | Any ERC-20 token without EIP-2612 (fallback). |
+
+When a seller advertises these extensions, the client can pay with any ERC-20 token — even if the buyer has no native gas tokens. The facilitator broadcasts the pre-signed approval transaction and settles the payment in an atomic batch.
+
+Sellers declare support via `@x402/extensions`:
+
+```ts
+import {
+  declareEip2612GasSponsoringExtension,
+  declareErc20ApprovalGasSponsoringExtension,
+} from "@x402/extensions";
+
+extensions: {
+  ...declareEip2612GasSponsoringExtension(),
+  ...declareErc20ApprovalGasSponsoringExtension(),
+}
+```
+
 ## Connecting from a server
 
 Point your x402 resource server at the facilitator URL. With `@x402/core`:

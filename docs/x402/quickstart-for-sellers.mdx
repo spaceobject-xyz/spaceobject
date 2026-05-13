@@ -35,6 +35,10 @@ Create an `HTTPFacilitatorClient` targeting `https://facilitator.heraldprotocol.
 
 ```ts server.ts
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import {
+  declareEip2612GasSponsoringExtension,
+  declareErc20ApprovalGasSponsoringExtension,
+} from "@x402/extensions";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
@@ -70,6 +74,10 @@ app.use(
         ],
         description: "Weather data",
         mimeType: "application/json",
+        extensions: {
+          ...declareEip2612GasSponsoringExtension(), // Enable EIP-2612 gas sponsoring
+          ...declareErc20ApprovalGasSponsoringExtension(), // Enable ERC-20 approval gas sponsoring
+        },
       },
     },
     new x402ResourceServer(facilitatorClient).register(
@@ -110,6 +118,17 @@ Each protected route declares one or more `accepts` entries. A client picks the 
 | `price` | USD-style string (e.g. `"$0.001"`) or an atomic token amount as a string. |
 | `network` | CAIP-2 network ID — `eip155:16661` (mainnet) or `eip155:16602` (testnet). |
 | `payTo` | EVM address that receives the payment. |
+
+## Gas sponsoring extensions
+
+To support **any ERC-20 token** (not just EIP-3009 tokens like USDC.e), advertise these extensions in your route configuration:
+
+| Extension | Purpose |
+| --- | --- |
+| `declareEip2612GasSponsoringExtension()` | Gasless EIP-2612 permit for tokens that support it (preferred). |
+| `declareErc20ApprovalGasSponsoringExtension()` | Gasless raw ERC-20 `approve()` for tokens without EIP-2612 (fallback). |
+
+The client automatically picks the best option: EIP-2612 if the token supports it, ERC-20 approval otherwise. Both are handled transparently — no code changes needed on the client beyond providing `signTransaction` and `getTransactionCount` capabilities.
 
 ## Using another framework
 
