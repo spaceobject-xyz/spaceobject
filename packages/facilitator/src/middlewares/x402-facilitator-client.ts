@@ -7,10 +7,17 @@ import type { Env } from "../env";
 import type { EvmChainId, EvmWalletClient } from "../lib/chains/evm";
 import { createEvmWalletClient, SUPPORTED_EVM_CHAINS } from "../lib/chains/evm";
 import {
+  createErc20ApprovalGasSponsoringRegistry,
+  registerErc20ApprovalGasSponsoringExtension,
+} from "../lib/x402/extension";
+import {
   registerEvmExactScheme,
   registerEvmUptoScheme,
 } from "../lib/x402/scheme";
-import { createEvmFacilitatorSigner } from "../lib/x402/signer";
+import {
+  createErc20ApprovalGasSponsoringSigner,
+  createEvmFacilitatorSigner,
+} from "../lib/x402/signer";
 
 export type X402FacilitatorClientVariables = {
   X402_FACILITATOR: x402Facilitator;
@@ -32,6 +39,9 @@ export const x402FacilitatorClient = () =>
     const signer = privateKeyToAccount(c.env.FACILITATOR_PRIVATE_KEY as Hex);
     const walletClients: Partial<Record<EvmChainId, EvmWalletClient>> = {};
 
+    const erc20ApprovalSignerRegistry =
+      createErc20ApprovalGasSponsoringRegistry();
+
     for (const chainId of Object.keys(SUPPORTED_EVM_CHAINS) as EvmChainId[]) {
       const rpcUrlKey = RPC_URL_BY_CHAIN[chainId];
       const rpcUrl = c.env[rpcUrlKey] as string | undefined;
@@ -42,10 +52,19 @@ export const x402FacilitatorClient = () =>
       walletClients[chainId] = client;
 
       const facilitatorSigner = createEvmFacilitatorSigner(client);
+      const erc20ApprovalSigner =
+        createErc20ApprovalGasSponsoringSigner(client);
 
       registerEvmExactScheme(facilitator, chainId, facilitatorSigner);
       registerEvmUptoScheme(facilitator, chainId, facilitatorSigner);
+
+      erc20ApprovalSignerRegistry.registerSigner(chainId, erc20ApprovalSigner);
     }
+
+    registerErc20ApprovalGasSponsoringExtension(
+      facilitator,
+      erc20ApprovalSignerRegistry
+    );
 
     c.set("X402_FACILITATOR", facilitator);
     c.set("X402_WALLET_CLIENTS", walletClients);

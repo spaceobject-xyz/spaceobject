@@ -13,8 +13,9 @@
   },
   "dependencies": {
     "@hono/zod-validator": "0.7.6",
-    "@x402/core": "2.10.0",
-    "@x402/evm": "2.10.0",
+    "@x402/core": "2.12.0",
+    "@x402/evm": "2.12.0",
+    "@x402/extensions": "2.12.0",
     "hono": "4.12.14",
     "viem": "2.48.0",
     "zod": "catalog:"

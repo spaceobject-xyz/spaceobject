@@ -1,8 +1,16 @@
+import type {
+  Erc20ApprovalGasSponsoringSigner,
+  TransactionRequest,
+} from "@x402/extensions";
 import type { VerifyTypedDataParameters } from "viem";
 import { toFacilitatorEvmSigner } from "@x402/evm";
 
 import type { EvmWalletClient } from "../chains/evm";
 
+/**
+ * Creates a FacilitatorEvmSigner from a viem wallet client.
+ * This is the standard signer used for verify/settle operations.
+ */
 export const createEvmFacilitatorSigner = (client: EvmWalletClient) =>
   toFacilitatorEvmSigner({
     getCode: (args: { address: `0x${string}` }) => client.getCode(args),
@@ -40,3 +48,35 @@ export const createEvmFacilitatorSigner = (client: EvmWalletClient) =>
     waitForTransactionReceipt: (args: { hash: `0x${string}` }) =>
       client.waitForTransactionReceipt(args),
   });
+
+export const createErc20ApprovalGasSponsoringSigner = (
+  client: EvmWalletClient
+): Erc20ApprovalGasSponsoringSigner => {
+  const signer = createEvmFacilitatorSigner(client);
+
+  return {
+    ...signer,
+    sendTransactions: async (transactions: TransactionRequest[]) => {
+      const hashes: `0x${string}`[] = [];
+
+      for (const tx of transactions) {
+        let hash: `0x${string}`;
+
+        if (typeof tx === "string") {
+          hash = await client.sendRawTransaction({
+            serializedTransaction: tx,
+          });
+        } else {
+          hash = await client.sendTransaction(tx);
+        }
+        const receipt = await client.waitForTransactionReceipt({ hash });
+        if (receipt.status !== "success") {
+          throw new Error(`transaction_failed: ${hash}`);
+        }
+
+        hashes.push(hash);
+      }
+      return hashes;
+    },
+  };
+};
