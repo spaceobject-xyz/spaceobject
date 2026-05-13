@@ -9,6 +9,7 @@ import { createEvmWalletClient, SUPPORTED_EVM_CHAINS } from "../lib/chains/evm";
 import {
   createErc20ApprovalGasSponsoringRegistry,
   registerErc20ApprovalGasSponsoringExtension,
+  registerErc2612GasSponsoringExtension,
 } from "../lib/x402/extension";
 import {
   registerEvmExactScheme,
@@ -61,6 +62,7 @@ export const x402FacilitatorClient = () =>
       erc20ApprovalSignerRegistry.registerSigner(chainId, erc20ApprovalSigner);
     }
 
+    registerErc2612GasSponsoringExtension(facilitator);
     registerErc20ApprovalGasSponsoringExtension(
       facilitator,
       erc20ApprovalSignerRegistry

@@ -1,6 +1,9 @@
 import type { x402Facilitator } from "@x402/core/facilitator";
 import type { Erc20ApprovalGasSponsoringSigner } from "@x402/extensions";
-import { createErc20ApprovalGasSponsoringExtension } from "@x402/extensions";
+import {
+  createErc20ApprovalGasSponsoringExtension,
+  EIP2612_GAS_SPONSORING,
+} from "@x402/extensions";
 
 import type { EvmChainId } from "../chains/evm";
 
@@ -40,4 +43,10 @@ export const registerErc20ApprovalGasSponsoringExtension = (
       (network) => registry.getClient(network as EvmChainId)
     )
   );
+};
+
+export const registerErc2612GasSponsoringExtension = (
+  facilitator: x402Facilitator
+) => {
+  facilitator.registerExtension(EIP2612_GAS_SPONSORING);
 };
