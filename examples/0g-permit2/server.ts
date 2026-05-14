@@ -1,5 +1,3 @@
-import type { AssetAmount, Price } from "@x402/core/types";
-import type { Network } from "@x402/hono";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
 import {
@@ -21,47 +19,15 @@ const facilitatorClient = new HTTPFacilitatorClient({
 
 app.use(logger());
 
-export class W0GEvmScheme extends ExactEvmScheme {
-  private convertToTokenAmount(decimalAmount: string, decimals: number) {
-    const amount = parseFloat(decimalAmount);
-    if (Number.isNaN(amount)) {
-      throw new Error(`Invalid amount: ${decimalAmount}`);
-    }
-    const [intPart, decPart = ""] = String(amount).split(".");
-    const paddedDec = decPart.padEnd(decimals, "0").slice(0, decimals);
-    const tokenAmount = (intPart + paddedDec).replace(/^0+/, "") || "0";
-    return tokenAmount;
+function convertToTokenAmount(decimalAmount: string, decimals: number) {
+  const amount = parseFloat(decimalAmount);
+  if (Number.isNaN(amount)) {
+    throw new Error(`Invalid amount: ${decimalAmount}`);
   }
-
-  async parsePrice(price: Price, network: Network): Promise<AssetAmount> {
-    if (network !== "eip155:16661") return super.parsePrice(price, network);
-
-    if (typeof price === "number")
-      return {
-        asset: "0x1f3aa82227281ca364bfb3d253b0f1af1da6473e",
-        amount: this.convertToTokenAmount(price.toString(), 6),
-        extra: {
-          name: "Bridged USDC",
-          version: "2",
-        },
-      };
-
-    if (typeof price === "string") {
-      const [decimalAmount] = price.split("W0G");
-
-      const amount = this.convertToTokenAmount(decimalAmount.trim(), 18);
-
-      return {
-        asset: "0x1cd0690ff9a693f5ef2dd976660a8dafc81a109c",
-        amount,
-        extra: {
-          assetTransferMethod: "permit2",
-        },
-      };
-    }
-
-    return price;
-  }
+  const [intPart, decPart = ""] = String(amount).split(".");
+  const paddedDec = decPart.padEnd(decimals, "0").slice(0, decimals);
+  const tokenAmount = (intPart + paddedDec).replace(/^0+/, "") || "0";
+  return tokenAmount;
 }
 
 app.use(
@@ -71,7 +37,13 @@ app.use(
         accepts: [
           {
             scheme: "exact",
-            price: "0.00033 W0G",
+            price: {
+              asset: "0x1cd0690ff9a693f5ef2dd976660a8dafc81a109c",
+              amount: convertToTokenAmount("0.0005", 18),
+              extra: {
+                assetTransferMethod: "permit2",
+              },
+            },
             network: "eip155:16661",
             payTo: evmAddress,
           },
@@ -86,7 +58,7 @@ app.use(
     },
     new x402ResourceServer(facilitatorClient).register(
       "eip155:16661",
-      new W0GEvmScheme()
+      new ExactEvmScheme()
     )
   )
 );
