@@ -8,11 +8,7 @@ import {
   parseEventLogs,
 } from "viem";
 import { parseAccount } from "viem/accounts";
-import {
-  getTransactionReceipt,
-  sendTransaction,
-  sendTransactionSync,
-} from "viem/actions";
+import { getTransactionReceipt, sendTransaction } from "viem/actions";
 
 import type { MaybePromise } from "../types.js";
 import * as defaults from "../defaults.js";
@@ -212,32 +208,7 @@ export function charge(parameters: charge.Parameters = {}): Method.AnyServer {
           await assertHashUnused(store, hash);
           await markHashUsed(store, hash);
 
-          if (waitForConfirmation) {
-            const receipt = await sendTransactionSync(client, {
-              account: serverAccount,
-              chain: client.chain,
-              to: challengeCurrency,
-              data: encodeFunctionData({
-                abi: defaults.erc3009Abi,
-                functionName: "transferWithAuthorization",
-                args: [
-                  from as Address,
-                  to as Address,
-                  BigInt(value),
-                  BigInt(validAfter),
-                  BigInt(validBefore),
-                  nonce as `0x${string}`,
-                  v,
-                  r as `0x${string}`,
-                  s as `0x${string}`,
-                ],
-              }),
-            } as never);
-
-            return toReceipt(receipt);
-          }
-
-          const txHash = await sendTransaction(client, {
+          const hash = await sendTransaction(client, {
             account: serverAccount,
             chain: client.chain,
             to: challengeCurrency,
@@ -258,11 +229,19 @@ export function charge(parameters: charge.Parameters = {}): Method.AnyServer {
             }),
           } as never);
 
+          if (waitForConfirmation) {
+            const receipt = await getTransactionReceipt(client, {
+              hash,
+            });
+
+            return toReceipt(receipt);
+          }
+
           return {
             method: "zerog" as const,
             status: "success" as const,
             timestamp: new Date().toISOString(),
-            reference: txHash,
+            reference: hash,
           };
         }
 

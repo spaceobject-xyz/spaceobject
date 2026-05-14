@@ -2,7 +2,7 @@ import type { Account, Address, Chain, Client } from "viem";
 import { Credential, Method, z } from "mppx";
 import { encodeFunctionData, erc20Abi } from "viem";
 import { parseAccount } from "viem/accounts";
-import { sendTransactionSync, signTypedData } from "viem/actions";
+import { sendTransaction, signTypedData } from "viem/actions";
 
 import type { MaybePromise } from "../types.js";
 import * as defaults from "../defaults.js";
@@ -135,17 +135,17 @@ export function charge(parameters: charge.Parameters = {}) {
       }
 
       if (mode === "push") {
-        const receipt = await sendTransactionSync(client, {
+        const hash = await sendTransaction(client, {
           account,
           chain: client.chain,
           to: currency,
           data: encodeFunctionData({
             abi: erc20Abi,
             functionName: "transfer",
-            args: [recipient, amount],
+            args: [recipient, amount] as const,
           }),
         });
-        const hash = receipt.transactionHash;
+
         return Credential.serialize({
           challenge,
           payload: { hash, type: "hash" },
