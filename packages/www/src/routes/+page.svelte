@@ -5,6 +5,10 @@ import { onMount } from "svelte";
 import background from "$lib/assets/background.webp";
 // biome-ignore lint/correctness/noUnusedImports: used in template
 import logo from "$lib/assets/logo.png";
+// biome-ignore lint/correctness/noUnusedImports: used in template
+import PaymentFlowGraphic from "$lib/components/PaymentFlowGraphic.svelte";
+// biome-ignore lint/correctness/noUnusedImports: used in template
+import RouterFlowGraphic from "$lib/components/RouterFlowGraphic.svelte";
 
 onMount(() => {
   const bg = document.querySelector<HTMLElement>("[data-bg-layer]");
@@ -21,7 +25,7 @@ onMount(() => {
       return;
     }
 
-    bg.style.backgroundPosition = `center calc(50% - ${window.scrollY * 0.3}px)`;
+    bg.style.backgroundPosition = `center calc(20% - ${window.scrollY * 0.2}px)`;
     ticking = false;
   }
 
@@ -185,102 +189,81 @@ onMount(() => {
   </div>
 </section>
 
+<!-- Section 02: How Agent Payment Works -->
 <section
-  data-screen-label="02 What We Are"
+  data-screen-label="02 How Agent Payment Works"
   class="py-[clamp(8rem,14vh,14rem)] px-6 md:px-[clamp(1.5rem,8vw,8rem)]"
 >
-  <div
-    class="grid grid-cols-1 md:grid-cols-[1fr_3fr] gap-8 md:gap-[clamp(2rem,6vw,6rem)] items-start max-w-350"
-  >
-    <aside
+  <div class="max-w-350 mx-auto">
+    <div
       data-enter
-      class="static md:sticky md:top-8 flex flex-row md:flex-col items-center md:items-start gap-4 md:gap-[0.9rem] opacity-0 translate-y-2 transition-[opacity,translate] duration-420 ease-[cubic-bezier(0.23,1,0.32,1)] will-change-[opacity,translate] [&.is-in]:opacity-100 [&.is-in]:translate-y-0 motion-reduce:translate-none"
+      class="flex flex-col gap-5 mb-[clamp(4rem,8vh,6rem)] opacity-0 translate-y-2 transition-[opacity,translate] duration-420 ease-[cubic-bezier(0.23,1,0.32,1)] will-change-[opacity,translate] [&.is-in]:opacity-100 [&.is-in]:translate-y-0 motion-reduce:translate-none"
     >
       <span
-        class="font-mono font-medium text-xs tracking-[0.15em] uppercase text-muted leading-[1.6]"
-        >Infrastructure</span
+        class="font-mono font-medium text-xs tracking-[0.15em] uppercase text-muted leading-[1.4]"
+        >Protocol</span
       >
-    </aside>
-
-    <div class="flex flex-col gap-0">
       <h2
-        data-enter
-        class="m-0 mb-10 font-mono font-bold text-[clamp(2.5rem,5vw,5rem)] leading-none tracking-[-0.015em] uppercase text-heading opacity-0 translate-y-2 transition-[opacity,translate] duration-420 ease-[cubic-bezier(0.23,1,0.32,1)] delay-[60ms] will-change-[opacity,translate] [&.is-in]:opacity-100 [&.is-in]:translate-y-0 motion-reduce:translate-none"
+        class="m-0 font-mono font-bold text-[clamp(2.5rem,5vw,5rem)] leading-none tracking-[-0.015em] uppercase text-heading"
       >
-        What we are
+        How agent payment works
       </h2>
-
       <p
-        data-enter
-        class="m-0 font-sans font-normal text-[clamp(1rem,1.1vw,1.125rem)] leading-[1.75] text-fg max-w-[65ch] opacity-0 translate-y-2 transition-[opacity,translate] duration-420 ease-[cubic-bezier(0.23,1,0.32,1)] delay-120 will-change-[opacity,translate] [&.is-in]:opacity-100 [&.is-in]:translate-y-0 motion-reduce:translate-none"
+        class="m-0 font-sans font-normal text-[clamp(1rem,1.1vw,1.125rem)] leading-[1.75] text-fg max-w-[55ch]"
       >
-        Herald Protocol is the infrastructure layer for autonomous agent
-        economics, operating exclusively on the
-        <a
-          href="https://0g.ai"
-          target="_blank"
-          rel="noopener"
-          class="text-accent font-bold no-underline border-b border-line transition-[opacity,border-color] duration-120 ease-out hover:opacity-70 active:opacity-50"
-          >0G Chain</a
-        >. We provide the settlement primitives that allow AI agents to meter,
-        charge, and pay for digital resources at scale.
+        Any API or service returns a 402 Payment Required status. The client
+        pays with USDC or any ERC20 token on 0G Chain.
       </p>
+    </div>
 
+    <div
+      data-enter
+      class="opacity-0 translate-y-2 transition-[opacity,translate] duration-420 ease-[cubic-bezier(0.23,1,0.32,1)] delay-120 will-change-[opacity,translate] [&.is-in]:opacity-100 [&.is-in]:translate-y-0 motion-reduce:translate-none"
+    >
+      <PaymentFlowGraphic />
+    </div>
+  </div>
+</section>
+
+<!-- Section 03: How the Router Works -->
+<section
+  data-screen-label="03 How the Router Works"
+  class="py-[clamp(8rem,14vh,14rem)] px-6 md:px-[clamp(1.5rem,8vw,8rem)]"
+>
+  <div class="max-w-350 mx-auto">
+    <div
+      data-enter
+      class="flex flex-col gap-5 mb-[clamp(4rem,8vh,6rem)] opacity-0 translate-y-2 transition-[opacity,translate] duration-420 ease-[cubic-bezier(0.23,1,0.32,1)] will-change-[opacity,translate] [&.is-in]:opacity-100 [&.is-in]:translate-y-0 motion-reduce:translate-none"
+    >
+      <span
+        class="font-mono font-medium text-xs tracking-[0.15em] uppercase text-muted leading-[1.4]"
+        >Routing</span
+      >
+      <h2
+        class="m-0 font-mono font-bold text-[clamp(2.5rem,5vw,5rem)] leading-none tracking-[-0.015em] uppercase text-heading"
+      >
+        How the router works
+      </h2>
       <p
-        data-enter
-        class="mt-[1.4rem] font-sans font-normal text-[clamp(1rem,1.1vw,1.125rem)] leading-[1.75] text-fg max-w-[65ch] opacity-0 translate-y-2 transition-[opacity,translate] duration-420 ease-[cubic-bezier(0.23,1,0.32,1)] delay-180 will-change-[opacity,translate] [&.is-in]:opacity-100 [&.is-in]:translate-y-0 motion-reduce:translate-none"
+        class="m-0 font-sans font-normal text-[clamp(1rem,1.1vw,1.125rem)] leading-[1.75] text-fg max-w-[55ch]"
       >
-        We ship an x402 facilitator so any API, MCP server, or agent can accept
-        onchain payments on 0G, and a cross-chain payment router so agents
-        holding funds on 0G can pay services on other chains without managing
-        multiple wallets.
+        The router proxies requests to any protected service. When it receives a
+        402, it maps payment requirements to every supported network and rail —
+        from EVM chains to Solana, Stellar, Tempo, Stripe, and beyond.
       </p>
+    </div>
 
-      <dl
-        data-enter
-        class="mt-12 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-x-10 gap-y-6 border-t border-line pt-[1.6rem] opacity-0 translate-y-2 transition-[opacity,translate] duration-420 ease-[cubic-bezier(0.23,1,0.32,1)] delay-240 will-change-[opacity,translate] [&.is-in]:opacity-100 [&.is-in]:translate-y-0 motion-reduce:translate-none"
-      >
-        <div>
-          <dt
-            class="font-sans font-medium text-[0.7rem] tracking-[0.15em] uppercase text-muted mb-[0.35rem]"
-          >
-            x402 Facilitator
-          </dt>
-          <dd
-            class="m-0 font-mono font-medium text-[0.9rem] leading-[1.4] text-heading break-words"
-          >
-            <a
-              target="_blank"
-              href="https://facilitator.heraldprotocol.xyz"
-              class="group inline-flex items-center gap-[0.6rem] font-mono font-medium text-[0.85rem] text-heading no-underline tracking-[0.02em] transition-opacity duration-120 ease-out hover:opacity-70 active:opacity-50"
-              >facilitator.heraldprotocol.xyz</a
-            >
-          </dd>
-        </div>
-        <div>
-          <dt
-            class="font-sans font-medium text-[0.7rem] tracking-[0.15em] uppercase text-muted mb-[0.35rem]"
-          >
-            Router
-          </dt>
-          <dd
-            class="m-0 font-mono font-medium text-[0.9rem] leading-[1.4] text-heading break-words"
-          >
-            <a
-              target="_blank"
-              href="https://router.heraldprotocol.xyz"
-              class="group inline-flex items-center gap-[0.6rem] font-mono font-medium text-[0.85rem] text-heading no-underline tracking-[0.02em] transition-opacity duration-120 ease-out hover:opacity-70 active:opacity-50"
-              >router.heraldprotocol.xyz</a
-            >
-          </dd>
-        </div>
-      </dl>
+    <div
+      data-enter
+      class="opacity-0 translate-y-2 transition-[opacity,translate] duration-420 ease-[cubic-bezier(0.23,1,0.32,1)] delay-120 will-change-[opacity,translate] [&.is-in]:opacity-100 [&.is-in]:translate-y-0 motion-reduce:translate-none"
+    >
+      <RouterFlowGraphic />
     </div>
   </div>
 </section>
 
 <footer
-  data-screen-label="03 Start Building"
+  data-screen-label="04 Start Building"
   class="bg-surface px-6 md:px-[clamp(1.5rem,8vw,8rem)] pt-[clamp(5rem,10vh,9rem)] mt-[clamp(6rem,10vh,10rem)]"
 >
   <div
@@ -302,7 +285,7 @@ onMount(() => {
     </div>
 
     <div
-      class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr] gap-0 md:gap-[clamp(1.5rem,3vw,3rem)] items-stretch"
+      class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr] gap-12 md:gap-[clamp(1.5rem,3vw,3rem)] items-stretch"
     >
       <article
         data-enter
@@ -399,7 +382,7 @@ onMount(() => {
   </div>
 
   <div
-    class="border-t border-line pt-[1.4rem] pb-[1.6rem] flex flex-col md:flex-row md:justify-between md:items-center items-start gap-2 md:gap-6 flex-wrap"
+    class="border-t border-line pt-[1.4rem] pb-[1.6rem] flex justify-between items-center items-start gap-2 md:gap-6 flex-wrap"
   >
     <span
       class="font-mono font-medium text-[0.7rem] tracking-[0.15em] uppercase text-muted leading-[1.4]"
