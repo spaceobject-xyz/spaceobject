@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@heraldprotocol/mpp",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "0G Chain payment method for the Machine Payments Protocol",
   "repository": {
     "type": "git",
@@ -30,9 +30,7 @@
   "types": "./dist/esm/index.d.ts",
   "sideEffects": false,
   "files": [
-    "dist",
-    "src/**/*.ts",
-    "!**/*.test.ts"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",
