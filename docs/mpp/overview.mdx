@@ -1,0 +1,55 @@
+---
+title: Overview
+description: How MPP works on 0G through Herald Protocol.
+---
+
+[MPP](https://mpp.dev) (Machine Payments Protocol) is an open standard for machine-to-machine payments over HTTP. It uses the `402 Payment Required` status code to let any server charge for any resource, and any client (including AI agents) pay for it — no accounts, API keys, or off-chain escrow.
+
+Herald Protocol provides a native MPP payment method for **0G Chain** so sellers and buyers can use the MPP protocol with 0G's ERC-3009-compatible USDC.e.
+
+## How it works
+
+<Steps>
+  <Step title="Client requests a resource">
+    The client makes a normal HTTP request to the seller's endpoint.
+  </Step>
+  <Step title="Server responds with 402">
+    If payment is required, the server returns `402 Payment Required` with a challenge describing price, network, token, and recipient.
+  </Step>
+  <Step title="Client pays">
+    The client either broadcasts an ERC-20 `transfer` transaction (push mode, works with any ERC-20 token) and sends the tx hash, or signs an ERC-3009 `TransferWithAuthorization` message (pull mode, requires an ERC-3009-compatible token) and sends the signed payload in the `Authorization` header.
+  </Step>
+  <Step title="Server verifies">
+    The server verifies the payment on-chain — either by checking the transaction receipt (push) or by broadcasting `transferWithAuthorization` (pull).
+  </Step>
+  <Step title="Server returns the resource">
+    On success, the server returns the response with a `Payment-Receipt` header.
+  </Step>
+</Steps>
+
+## Differences from x402
+
+Both MPP and x402 solve the same problem — machine payments over HTTP — but with different protocol designs:
+
+| | MPP | x402 |
+|---|---|---|
+| **Protocol** | [mpp.dev](https://mpp.dev) | [x402.org](https://x402.org) |
+| **Credential format** | `Authorization: Payment <base64>` | `PAYMENT-SIGNATURE` header |
+| **Settlement** | Client or server broadcasts | Facilitator broadcasts |
+| **Gas** | Client pays for `transfer` (push); server pays for `transferWithAuthorization` (pull) | Facilitator pays |
+| **Token support** | Any ERC-20 (push) or ERC-3009 (pull) | EIP-3009 + Permit2 (any ERC-20) |
+
+Use MPP when you want direct server-side settlement without a facilitator. Use x402 when you want gasless onboarding, Permit2 support, and a hosted facilitator.
+
+## Supported networks
+
+| Network | Chain ID | Default Asset | Symbol | Address |
+|---|---|---|---|---|
+| 0G Mainnet | `16661` | Bridged USDC | USDC.e | `0x1f3aa82227281ca364bfb3d253b0f1af1da6473e` |
+| 0G Galileo Testnet | `16602` | — | — | — |
+
+> Testnet has no default currency configured. Pass a `currency` address explicitly when using testnet.
+
+<Card title="Next: quickstart" icon="arrow-right" href="/mpp/quickstart">
+  Add MPP payments to your server in a few lines.
+</Card>

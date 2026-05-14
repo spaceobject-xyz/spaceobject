@@ -1,0 +1,45 @@
+---
+title: Supported Networks
+description: Networks and tokens supported by @heraldprotocol/mpp.
+---
+
+`@heraldprotocol/mpp` supports the following 0G networks. Network identifiers follow [CAIP-2](https://chainagnostic.org/CAIPs/caip-2).
+
+## Networks
+
+| Network | Chain ID | Status |
+|---|---|---|
+| 0G Mainnet | `16661` | Live |
+| 0G Galileo Testnet | `16602` | Supported (no default currency) |
+
+## Tokens
+
+| Network | Asset | Symbol | Address | Decimals | Transfer Method |
+|---|---|---|---|---|---|
+| `16661` | Bridged USDC | USDC.e | `0x1f3aa82227281ca364bfb3d253b0f1af1da6473e` | 6 | ERC-3009 (EIP-3009) |
+| `16602` | — | — | — | — | — |
+
+<Note>
+  Only EIP-3009 tokens are supported. The client signs a `TransferWithAuthorization` message; the server broadcasts `transferWithAuthorization`.
+</Note>
+
+<Note>
+  Testnet has no default currency configured. Pass a `currency` address explicitly when using testnet, or the server will throw an error.
+</Note>
+
+## Getting USDC.e on 0G Mainnet
+
+Swap for USDC.e via the official 0G bridge:
+
+<Card title="hub.0g.ai" icon="arrow-right-arrow-left" href="https://hub.0g.ai/swap?network=mainnet">
+  Swap into USDC.e on 0G Mainnet.
+</Card>
+
+## RPC endpoints
+
+| Network | Default RPC |
+|---|---|
+| 0G Mainnet | `https://evmrpc.0g.ai` |
+| 0G Galileo Testnet | `https://evmrpc-testnet.0g.ai` |
+
+You can override the default RPC by passing a custom `getClient` to server or client parameters.

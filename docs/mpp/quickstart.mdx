@@ -1,0 +1,141 @@
+---
+title: Quickstart
+description: Charge for your API or agent using MPP on 0G.
+---
+
+This guide walks you through putting an MPP paywall in front of an HTTP endpoint using `@heraldprotocol/mpp`. The example uses [Hono](https://hono.dev), but the same pattern works with any framework supported by `mppx`.
+
+## Prerequisites
+
+- A 0G-compatible EVM wallet address to receive payments
+- Node.js 18+ (or any runtime with WebCrypto and `fetch`)
+- A server framework supported by `mppx/hono`
+- USDC.e on 0G Mainnet for the client account
+
+## 1. Install dependencies
+
+<CodeGroup>
+
+```bash npm
+npm install @heraldprotocol/mpp mppx hono viem
+```
+
+```bash pnpm
+pnpm add @heraldprotocol/mpp mppx hono viem
+```
+
+```bash bun
+bun add @heraldprotocol/mpp mppx hono viem
+```
+
+</CodeGroup>
+
+## 2. Set up the server
+
+Import `zerog` from `@heraldprotocol/mpp/server` and create an `Mppx` instance. The server needs an `account` to broadcast `transferWithAuthorization` transactions (it pays gas from this account).
+
+```ts server.ts
+import { zerog } from "@heraldprotocol/mpp/server";
+import { Hono } from "hono";
+import { Mppx } from "mppx/hono";
+import { privateKeyToAccount } from "viem/accounts";
+
+const account = privateKeyToAccount(
+  process.env.SERVER_PRIVATE_KEY as `0x${string}`,
+);
+
+const mppx = Mppx.create({
+  methods: [
+    zerog({
+      recipient: account.address,
+      account,
+    }),
+  ],
+});
+
+const app = new Hono();
+
+app.get("/premium", mppx.charge({ amount: "0.01" }), (c) =>
+  c.json({ data: "You have accessed premium content!" }),
+);
+
+export default {
+  port: 3000,
+  fetch: app.fetch,
+};
+```
+
+<Note>
+  The server `account` pays gas for `transferWithAuthorization`. It does not need to match the `recipient` address, but it must be funded with 0G native tokens.
+</Note>
+
+## 3. Set up the client
+
+Import `zerog` from `@heraldprotocol/mpp/client` and create an `Mppx` client instance. By default, JSON-RPC accounts (e.g. MetaMask) use **push** mode, while local accounts use **pull** mode. You can override this with the `mode` parameter.
+
+```ts client.ts
+import { zerog } from "@heraldprotocol/mpp/client";
+import { Mppx } from "mppx/client";
+import { privateKeyToAccount } from "viem/accounts";
+
+const account = privateKeyToAccount(
+  process.env.CLIENT_PRIVATE_KEY as `0x${string}`,
+);
+
+const mppx = Mppx.create({
+  methods: [zerog({ account, mode: "pull" })],
+});
+
+const response = await mppx.fetch("http://localhost:3000/premium");
+const data = await response.json();
+console.log("Response:", data);
+```
+
+<Note>
+  The client account must be funded with USDC.e on 0G Mainnet.
+</Note>
+
+## 4. Test it
+
+Start your server and run the client:
+
+```bash
+# Terminal 1
+bun run server.ts
+
+# Terminal 2
+bun run client.ts
+```
+
+The client automatically handles the 402 challenge, pays (push or pull), and retries the request. The server verifies the payment on-chain and returns the resource on success.
+
+## Server parameters reference
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `recipient` | `string` | — | Address that receives payments |
+| `currency` | `string` | USDC.e | ERC-20 token contract address |
+| `decimals` | `number` | `6` | Token decimals |
+| `amount` | `string` | — | Default payment amount (human-readable) |
+| `account` | `Account \| Address` | — | Server wallet for broadcasting `transferWithAuthorization`. Required when accepting `authorization` payloads. |
+| `waitForConfirmation` | `boolean` | `true` | Wait for on-chain confirmation before returning receipt |
+| `store` | `Store` | In-memory | Store for signature replay protection |
+
+## Client parameters reference
+
+| Parameter | Type | Description |
+|---|---|---|
+| `account` | `Account \| Address` | Wallet account for signing transactions |
+| `getClient` | `(params) => Client` | Custom viem client resolver by chain ID |
+| `mode` | `'push' \| 'pull'` | `push`: client broadcasts any ERC-20 `transfer` (default for JSON-RPC accounts). `pull`: client signs an ERC-3009 `TransferWithAuthorization` (default for local accounts). Push mode works with any ERC-20 token; pull mode requires an ERC-3009-compatible token. |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Supported networks" icon="globe" href="/mpp/supported-networks">
+    Network IDs, stablecoins, and addresses.
+  </Card>
+  <Card title="Architecture" icon="shield-check" href="/mpp/architecture">
+    Security review guide for auditors and AI agents.
+  </Card>
+</CardGroup>

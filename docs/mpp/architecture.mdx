@@ -1,0 +1,184 @@
+---
+title: Architecture
+description: Security review guide for @heraldprotocol/mpp.
+---
+
+This document describes the architecture of `@heraldprotocol/mpp` for security reviewers, auditors, and AI agents. It is derived directly from the source code in `packages/sdk/js/mpp/src/`.
+
+## Package structure
+
+| Export | Path | Description |
+|---|---|---|
+| `@heraldprotocol/mpp` | `src/index.ts` | Base `charge` method definition (schema + intent) |
+| `@heraldprotocol/mpp/server` | `src/server/index.ts` | Server-side `charge` with `verify` + `zerog` factory |
+| `@heraldprotocol/mpp/client` | `src/client/index.ts` | Client-side `charge` with `createCredential` + `zerog` factory |
+
+The package depends on `mppx` (protocol framework), `viem` (EVM interactions), and `zod` (validation).
+
+## Security scope
+
+- **Settlement layer**: The library creates and verifies on-chain ERC-20 payments. Two credential types are supported:
+  - **`hash`** (push mode): Client broadcasts an ERC-20 `transfer` and sends the transaction hash.
+  - **`authorization`** (pull mode): Client signs an ERC-3009 `TransferWithAuthorization`; the server broadcasts it.
+- **Hardcoded defaults**: Chain IDs, token addresses, ERC-3009 metadata, and RPC URLs are constants in `defaults.ts`. All can be overridden by callers.
+- **No secrets**: No API keys or environment variables. RPC URLs, accounts, and stores are provided by the caller.
+
+## Trust boundaries
+
+There are two trust boundaries:
+
+1. **Client → Server**: The credential is transmitted via HTTP `Authorization` header per the MPP protocol. The server trusts nothing in the credential without on-chain verification.
+2. **Server → RPC**: The server verifies credentials by querying transaction receipts or broadcasting transactions. A malicious or faulty RPC can return incorrect data — mitigated via caller-provided `getClient`.
+
+## Data flow
+
+### 1. Challenge issuance (`server/request`)
+
+The server method defines a `request` hook that resolves the chain ID and validates the client configuration:
+
+1. If `request.chainId` is present in the challenge, use it.
+2. Otherwise, if `parameters.testnet` is `true`, use testnet chain ID (`16602`).
+3. Otherwise, use the chain ID from the resolved viem `Client`.
+4. Validate that the resolved `Client`'s chain matches the expected chain ID.
+5. Return the enriched request with `chainId`.
+
+The `request` schema (defined in `Methods.ts`) transforms the human-readable `amount` into atomic units via `parseUnits(amount, decimals)`.
+
+### 2. Credential creation (`client/createCredential`)
+
+The client creates a credential based on the challenge and the selected mode:
+
+**Mode selection logic:**
+- Explicit `mode` parameter (`"push"` or `"pull"`) takes highest priority.
+- If not set, defaults are: `"push"` for JSON-RPC accounts (e.g., MetaMask), `"pull"` for local accounts (e.g., `privateKeyToAccount`).
+
+**Pull mode (`authorization`):**
+1. Look up the token in `erc3009Tokens` by lowercase address. If not found, throw — the token does not support ERC-3009.
+2. Resolve EIP-712 domain fields: `name`, `version` from token metadata; `chainId` from challenge or client; `verifyingContract` = token address.
+3. Set `validAfter = 0`, `validBefore = challenge.expires (as Unix timestamp)` or 1 hour from now.
+4. Generate a random 32-byte `nonce` via `crypto.getRandomValues`.
+5. Sign typed data with `TransferWithAuthorization` type.
+6. Serialize credential with payload type `"authorization"` and `source` as a `did:pkh:eip155:<chainId>:<address>` DID.
+
+**Push mode (`hash`):**
+1. Broadcast an ERC-20 `transfer(to, amount)` transaction via `sendTransaction`.
+2. Serialize credential with payload type `"hash"` (the tx hash) and the same DID `source`.
+
+### 3. Payment verification (`server/verify`)
+
+The server verifies the credential against the challenge on-chain:
+
+**Pre-checks (both modes):**
+- If `challenge.expires` is set and has passed, reject.
+- Resolve a viem `Client` for the challenge's chain ID.
+
+**Hash verification (push mode):**
+1. Assert the hash has not been consumed before (via `Store` replay protection).
+2. Extract the sender address from the credential's `source` DID (`did:pkh:eip155:<chainId>:<address>`).
+3. Fetch the transaction receipt via `getTransactionReceipt`.
+4. Parse `Transfer` event logs from the receipt using standard `erc20Abi`.
+5. Find a log matching: correct token address (`log.address`), sender (`from`), recipient (`to`), and exact amount.
+6. If no match, throw `MismatchError` with expected vs actual details.
+7. Mark the hash as consumed in the `Store`.
+8. Return receipt with transaction hash.
+
+**Authorization verification (pull mode):**
+1. Require `serverAccount` to be configured. If missing, throw.
+2. Split the signature into `v`, `r`, `s`.
+3. Validate `to` matches `challenge.recipient` and `value` matches `challenge.amount`. Throw `MismatchError` on mismatch.
+4. Check `validBefore` timestamp against current time. Reject if expired.
+5. Compute `keccak256(signature)` and assert it has not been consumed (via `Store`).
+6. Mark the signature hash as consumed **before** broadcasting (prevents race conditions).
+7. Broadcast `transferWithAuthorization(from, to, value, validAfter, validBefore, nonce, v, r, s)` via `sendTransaction`.
+8. If `waitForConfirmation` is `true` (default), wait for the transaction receipt.
+9. Return receipt or pending success response.
+
+## Hardcoded constants
+
+Defined in `src/defaults.ts`:
+
+| Constant | Value | Description |
+|---|---|---|
+| `chainId.mainnet` | `16661` | 0G Mainnet |
+| `chainId.testnet` | `16602` | 0G Galileo Testnet |
+| `currency[16661]` | `0x1f3aa82227281ca364bfb3d253b0f1af1da6473e` | USDC.e on 0G Mainnet |
+| `currency[16602]` | — | None (must be passed explicitly) |
+| `decimals` | `6` | Default token decimals for USDC.e |
+| `rpcUrl[16661]` | `https://evmrpc.0g.ai` | Mainnet RPC |
+| `rpcUrl[16602]` | `https://evmrpc-testnet.0g.ai` | Testnet RPC |
+| `erc3009Tokens[USDC_E]` | `{ name: "Bridged USDC", version: "2" }` | Known ERC-3009 token metadata |
+
+## Security properties
+
+### Replay protection
+
+- **Hash mode**: Transaction hashes are tracked in a `Store` via keys `mppx:charge:<lowercase_hash>`. Each hash can only be used once.
+- **Authorization mode**: The `keccak256(signature)` is tracked in the same `Store`. Each signature can only be used once.
+- **Contract-level**: ERC-3009 enforces nonce uniqueness on-chain. The server-level store provides defense-in-depth and protects against hash replay across different currencies or chains.
+
+### Amount and recipient verification
+
+- **Hash mode**: The server parses event logs and strictly checks `address`, `from`, `to`, and `value` against the challenge.
+- **Authorization mode**: The server validates `to` and `value` against the challenge before broadcasting. The EIP-712 signature itself binds `from`, `to`, `value`, `validAfter`, `validBefore`, and `nonce`.
+
+### Expiration
+
+- Challenge `expires` enforces a server-side time window.
+- Pull mode `validBefore` is set to the challenge expiration (or 1 hour default). The ERC-3009 contract enforces this independently.
+
+### Sender verification
+
+- **Hash mode**: The sender is extracted from the `did:pkh:eip155` source DID and verified against the `Transfer` event log.
+- **Authorization mode**: The token contract verifies the EIP-712 signature via `ecrecover`.
+
+## Denial of service risks
+
+1. **Gas griefing (pull mode)**: The server pays gas for `transferWithAuthorization`. Malicious clients can submit authorizations that revert (e.g., insufficient balance, bad nonce). Mitigation: rate limiting, balance pre-checks, client authentication.
+2. **Hash replay attempts (push mode)**: A client could attempt to reuse an old transaction hash. Mitigation: `Store` tracks consumed hashes.
+3. **RPC dependency**: RPC rate limits or downtime block settlement. Mitigation: caller-provided `getClient` for fallback providers.
+4. **Store desync**: In multi-instance deployments, an in-memory `Store` allows replay across instances. Mitigation: pass a shared `Store` (e.g., Redis-backed) to `charge parameters`.
+
+## Known limitations
+
+- **ERC-3009 token allowlist (pull mode)**: Only tokens registered in `erc3009Tokens` are supported for pull mode. Push mode works with any ERC-20 token.
+- **Single-chain**: Each credential targets one chain. Cross-chain payments are not supported.
+- **No partial payments**: The full challenge amount must be paid in a single credential.
+- **No testnet default currency**: `resolveCurrency()` throws for testnet. Callers must explicitly pass a `currency` address when using testnet.
+- **Server account required for pull mode**: If the token is in `erc3009Tokens` and no `account` is provided, the server constructor throws. This ensures the server is configured to broadcast authorizations.
+
+## Credential schema
+
+The MPP protocol credential is a discriminated union of two payload types:
+
+```
+payload:
+  | { type: "hash", hash: Hex }
+  | { type: "authorization", from: Address, to: Address, value: string,
+      validAfter: string, validBefore: string, nonce: Hex, signature: Hex }
+```
+
+The `source` field is a `did:pkh:eip155:<chainId>:<address>` DID used for sender identification in hash mode.
+
+## Server parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `recipient` | `Address` | — | Address that receives payments |
+| `currency` | `Address` | USDC.e (mainnet) | ERC-20 token contract address |
+| `decimals` | `number` | `6` | Token decimals for amount parsing |
+| `amount` | `string` | — | Default payment amount (human-readable) |
+| `description` | `string` | — | Human-readable description |
+| `externalId` | `string` | — | External identifier echoed in receipt |
+| `testnet` | `boolean` | `false` | Use testnet chain ID |
+| `waitForConfirmation` | `boolean` | `true` | Wait for on-chain confirmation before returning receipt |
+| `account` | `Account \| Address` | — | Server wallet for broadcasting `transferWithAuthorization`. Required for pull mode |
+| `getClient` | `(params) => Client` | Built-in RPC | Custom viem client resolver by chain ID |
+| `store` | `Store` | In-memory | Store for hash/signature replay protection |
+
+## Client parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `account` | `Account \| Address` | Wallet account for signing transactions |
+| `getClient` | `(params) => Client` | Custom viem client resolver by chain ID |
+| `mode` | `"push" \| "pull"` | Explicit mode override. Defaults: `"push"` for JSON-RPC accounts, `"pull"` for local accounts |
