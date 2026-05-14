@@ -1,0 +1,17 @@
+{
+  "name": "heraldprotocol-mpp-example",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@heraldprotocol/mpp": "^0.0.6",
+    "hono": "^4.12.14",
+    "mppx": ">=0.4.8",
+    "viem": ">=2.46.2"
+  }
+}
