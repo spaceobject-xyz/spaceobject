@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@heraldprotocol/mpp",
+  "version": "0.0.1",
+  "description": "0G Chain payment method for the Machine Payments Protocol",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heraldprotocol/protocol.git",
+    "directory": "packages/sdk/js/mpp"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "default": "./dist/esm/index.js"
+    },
+    "./client": {
+      "types": "./dist/esm/client/index.d.ts",
+      "default": "./dist/esm/client/index.js"
+    },
+    "./server": {
+      "types": "./dist/esm/server/index.d.ts",
+      "default": "./dist/esm/server/index.js"
+    }
+  },
+  "main": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "src/**/*.ts",
+    "!**/*.test.ts"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "peerDependencies": {
+    "typescript": "catalog:",
+    "viem": ">=2.48.0",
+    "mppx": ">=0.4.8"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@tsconfig/node22": "catalog:",
+    "@types/node": "catalog:",
+    "tsup": "8.5.1",
+    "typescript": "catalog:"
+  }
+}
