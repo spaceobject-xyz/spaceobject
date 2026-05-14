@@ -1,4 +1,4 @@
-# 0G Example
+# x402 Example
 
 Demonstrates x402 pay-per-request on the [0G network](https://0g.ai) using Herald Protocol's facilitator.
 

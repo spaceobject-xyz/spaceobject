@@ -1,4 +1,4 @@
-# 0G Permit2 Example
+# x402 Permit2 Example
 
 This example demonstrates how to use **x402 with Permit2** on 0G Mainnet, enabling payments with **any ERC-20 token** — not just tokens that natively support EIP-3009 (`transferWithAuthorization`).
 
