@@ -8,7 +8,11 @@ import {
   parseEventLogs,
 } from "viem";
 import { parseAccount } from "viem/accounts";
-import { getTransactionReceipt, sendTransaction } from "viem/actions";
+import {
+  getTransactionReceipt,
+  sendTransaction,
+  waitForTransactionReceipt,
+} from "viem/actions";
 
 import type { MaybePromise } from "../types.js";
 import * as defaults from "../defaults.js";
@@ -230,7 +234,7 @@ export function charge(parameters: charge.Parameters = {}): Method.AnyServer {
           } as never);
 
           if (waitForConfirmation) {
-            const receipt = await getTransactionReceipt(client, {
+            const receipt = await waitForTransactionReceipt(client, {
               hash,
             });
 
