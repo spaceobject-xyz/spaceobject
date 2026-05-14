@@ -38,9 +38,9 @@ Not every service accepts payment on 0G. The **Herald Router** bridges that gap:
 ## Roadmap
 
 - ~~**Permit2 gas sponsoring** — accept any ERC-20 as payment, no native token required from the payer~~
+- ~~**[mpp](https://mpp.dev) support** — native integration with the machine payment protocol for broader agent-to-agent payment interoperability~~
+- ~~**EIP-3009 test token on 0G** — unblock the dev loop until an official USDC testnet lands~~ Wait for official USDC testnet
 - **More payment rails** — additional settlement protocols beyond x402, so agents can pay however the counterparty expects
-- **EIP-3009 test token on 0G** — unblock the dev loop until an official USDC testnet lands
-- **[mpp](https://mpp.dev) support** — native integration with the machine payment protocol for broader agent-to-agent payment interoperability
 
 ## Why 0G?
 
