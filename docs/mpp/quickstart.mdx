@@ -128,14 +128,3 @@ The client automatically handles the 402 challenge, pays (push or pull), and ret
 | `account` | `Account \| Address` | Wallet account for signing transactions |
 | `getClient` | `(params) => Client` | Custom viem client resolver by chain ID |
 | `mode` | `'push' \| 'pull'` | `push`: client broadcasts any ERC-20 `transfer` (default for JSON-RPC accounts). `pull`: client signs an ERC-3009 `TransferWithAuthorization` (default for local accounts). Push mode works with any ERC-20 token; pull mode requires an ERC-3009-compatible token. |
-
-## Next steps
-
-<CardGroup cols={2}>
-  <Card title="Supported networks" icon="globe" href="/mpp/supported-networks">
-    Network IDs, stablecoins, and addresses.
-  </Card>
-  <Card title="Architecture" icon="shield-check" href="/mpp/architecture">
-    Security review guide for auditors and AI agents.
-  </Card>
-</CardGroup>

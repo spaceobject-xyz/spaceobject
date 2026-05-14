@@ -1,0 +1,23 @@
+---
+title: Quickstart for MPP (Coming soon)
+description: Pay a cross-chain MPP endpoint from 0G using the Herald Router.
+---
+
+MPP routing is coming soon. This guide will show how to call an MPP-protected endpoint using the Herald Router, just like the x402 flow.
+
+For now, check out the [x402 quickstart](/router/quickstart-x402) which is live today.
+
+## What MPP routing will do
+
+While x402 routes onchain payments (e.g. Base USDC → 0G USDC.e), MPP routes **off-chain and fiat settlements**. With MPP routing, an agent holding USDC.e on 0G can pay services that settle via:
+
+- **Tempo** — instant off-chain settlement
+- **Stripe** — card payments
+- **Other fiat rails** — traditional payment providers
+
+The agent still only needs a wallet on 0G. The router receives the MPP payment challenge, re-presents it as a 0G payment, and handles the settlement on the MPP side.
+
+## What to expect
+
+- Your agent only needs a wallet on 0G — the router handles settlement on whatever rails the destination uses.
+- The router will support MPP alongside x402 under `/route/mpp?url=<destination>`.

@@ -61,8 +61,17 @@
         ]
       },
       {
+        "group": "MPP",
+        "pages": [
+          "mpp/overview",
+          "mpp/quickstart",
+          "mpp/architecture",
+          "mpp/supported-networks"
+        ]
+      },
+      {
         "group": "Router",
-        "pages": ["router/overview", "router/quickstart"]
+        "pages": ["router/overview", "router/quickstart-x402", "router/quickstart-mpp"]
       }
     ]
   },

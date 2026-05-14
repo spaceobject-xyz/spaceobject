@@ -1,9 +1,9 @@
 ---
-title: Quickstart
+title: Quickstart for x402
 description: Pay a cross-chain x402 endpoint from 0G using the Herald Router.
 ---
 
-This guide shows how to call an x402-protected endpoint on any supported chain using the Herald Router. Your agent only needs a wallet on 0G — the router handles settlement on the destination chain.
+This guide shows how to call an x402-protected endpoint on any supported chain using the Herald Router. The router supports multiple payment protocols — x402 is live now, and MPP support is coming soon. Your agent only needs a wallet on 0G — the router handles settlement on the destination chain.
 
 ## Prerequisites
 
@@ -59,7 +59,7 @@ const fetchWithPayment = wrapFetchWithPayment(fetch, client);
 Pass the destination URL as the `url` query parameter on the router endpoint. The wrapper handles the 402 round-trip automatically.
 
 ```ts client.ts
-const ROUTER_URL = "https://router.heraldprotocol.xyz/route";
+const ROUTER_URL = "https://router.heraldprotocol.xyz/route/x402";
 const destination = "https://some-x402-api.example.com/data";
 
 const response = await fetchWithPayment(
@@ -89,7 +89,7 @@ if (response.ok) {
 
 ## How the payment flows
 
-1. `fetchWithPayment` sends the request to `https://router.heraldprotocol.xyz/route?url=<destination>`.
+1. `fetchWithPayment` sends the request to `https://router.heraldprotocol.xyz/route/x402?url=<destination>`.
 2. The router proxies to the destination and gets a `402` response.
 3. The router re-presents the payment requirements to your client, mapped to 0G.
 4. `fetchWithPayment` signs a 0G payment and retries with `PAYMENT-SIGNATURE`.
@@ -105,13 +105,6 @@ if (response.ok) {
 
 Your agent always pays from 0G Mainnet — the destination chain is transparent to your client code.
 
-## Next steps
+## Other protocols
 
-<CardGroup cols={2}>
-  <Card title="Router Overview" icon="route" href="/router/overview">
-    How the router works end to end.
-  </Card>
-  <Card title="Quickstart for Sellers" icon="server" href="/x402/quickstart-for-sellers">
-    Expose your own x402-protected endpoint.
-  </Card>
-</CardGroup>
+The router is designed to support multiple payment protocols. x402 is live today; MPP routing is coming soon.
