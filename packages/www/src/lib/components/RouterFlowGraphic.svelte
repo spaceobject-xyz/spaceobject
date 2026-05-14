@@ -9,6 +9,7 @@ const mainSteps = [
   { label: "Receive Data", icon: "✅" },
 ];
 
+// biome-ignore lint/correctness/noUnusedVariables: used in Svelte template
 const destinations = [
   "Base",
   "Arbitrum",
@@ -21,6 +22,7 @@ const destinations = [
 
 let activeIndex = $state(0);
 let isVisible = $state(false);
+// biome-ignore lint/correctness/noUnusedVariables: used in Svelte template
 let hasFinished = $state(false);
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 let el: HTMLElement;
@@ -84,29 +86,35 @@ function isPast(i: number) {
   return isVisible && activeIndex > i;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: used in Svelte template
 function showDestinations() {
   return isVisible && activeIndex >= 2;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: used in Svelte template
 function cardClasses(i: number) {
   const active = isActive(i);
   return `w-24 h-24 rounded-3xl flex items-center justify-center text-4xl transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] border-2 ${active ? "border-accent bg-accent/10 shadow-[0_0_32px_rgba(200,100,200,0.4)] scale-110" : "border-line bg-surface"}`;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: used in Svelte template
 function mobileCardClasses(i: number) {
   const active = isActive(i);
   return `w-14 h-14 rounded-xl flex items-center justify-center text-xl transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] border-2 ${active ? "border-accent bg-accent/10 shadow-[0_0_24px_rgba(200,100,200,0.35)] scale-110" : "border-line bg-surface"}`;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: used in Svelte template
 function labelClasses(i: number) {
   return `font-mono text-xs tracking-[0.12em] uppercase text-center transition-colors duration-300 ${isActive(i) ? "text-heading" : "text-muted"}`;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: used in Svelte template
 function destClasses() {
   const active = isActive(2);
   return `px-3 py-1.5 rounded-full border font-mono text-[0.7rem] tracking-[0.1em] uppercase transition-all duration-400 ${active ? "border-accent bg-accent/10 text-heading" : "border-line bg-surface text-muted"}`;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: used in Svelte template
 function mobileDestClasses() {
   const active = isActive(2) || isPast(2);
   return `px-2.5 py-1 rounded-full border font-mono text-[0.65rem] tracking-[0.08em] uppercase ${active ? "border-accent bg-accent/10 text-heading" : "border-line bg-surface text-muted"}`;
