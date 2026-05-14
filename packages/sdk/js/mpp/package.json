@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@heraldprotocol/mpp",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "0G Chain payment method for the Machine Payments Protocol",
   "repository": {
     "type": "git",
@@ -36,13 +36,11 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "zod": "catalog:"
-  },
   "peerDependencies": {
     "typescript": "catalog:",
     "viem": ">=2.48.0",
-    "mppx": ">=0.4.8"
+    "mppx": ">=0.4.8",
+    "zod": "catalog:"
   },
   "peerDependenciesMeta": {
     "typescript": {

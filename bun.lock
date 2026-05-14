@@ -58,9 +58,6 @@
     "packages/sdk/js/mpp": {
       "name": "@heraldprotocol/mpp",
       "version": "0.0.2",
-      "dependencies": {
-        "zod": "catalog:",
-      },
       "devDependencies": {
         "@biomejs/biome": "catalog:",
         "@tsconfig/node22": "catalog:",
@@ -72,6 +69,7 @@
         "mppx": ">=0.4.8",
         "typescript": "catalog:",
         "viem": ">=2.48.0",
+        "zod": "catalog:",
       },
       "optionalPeers": [
         "typescript",
