@@ -1,6 +1,6 @@
 ---
 title: FAQ
-description: Common questions about Herald Protocol, the 0G x402 facilitator, and the cross-chain router.
+description: Common questions about Herald Protocol, x402, MPP, and the cross-chain router.
 ---
 
 <AccordionGroup>
@@ -12,24 +12,36 @@ description: Common questions about Herald Protocol, the 0G x402 facilitator, an
     [x402](https://x402.org) is an open payment standard built around the HTTP `402 Payment Required` status code. A server returns payment requirements; a client signs a payment; a facilitator verifies and settles it onchain. See the [x402 docs](https://docs.x402.org) for the full protocol.
   </Accordion>
 
-  <Accordion title="Do I need to run my own facilitator?">
-    No. Point your server at `https://facilitator.heraldprotocol.xyz` and you're done. The facilitator is free to use and drop-in compatible with the x402 spec.
+  <Accordion title="What is MPP?">
+    [MPP](https://mpp.dev) (Machine Payments Protocol) is an open standard for machine-to-machine payments over HTTP. Like x402, it uses the HTTP `402 Payment Required` status code — but settlement happens directly between client and server, with no facilitator in the middle. The client either broadcasts an ERC-20 `transfer` (push mode) or signs an ERC-3009 `TransferWithAuthorization` (pull mode); the server verifies on-chain. Use MPP when you want direct server-side settlement. Use x402 when you want gasless onboarding and a hosted facilitator.
   </Accordion>
 
-  <Accordion title="Which networks are supported for the facilitator?">
-    0G Mainnet (`eip155:16661`) and 0G Galileo Testnet (`eip155:16602`). See [Supported networks](/x402/supported-networks).
+  <Accordion title="Do I need to run my own facilitator?">
+    **For x402:** No. Point your server at `https://facilitator.heraldprotocol.xyz` and you're done. The facilitator is free to use and drop-in compatible with the x402 spec.
+
+    **For MPP:** No facilitator is needed. The server verifies payments directly on-chain — either by checking transaction receipts (push mode) or by broadcasting `transferWithAuthorization` (pull mode).
+  </Accordion>
+
+  <Accordion title="Which networks are supported?">
+    **x402 facilitator:** See [x402 Supported networks](/x402/supported-networks).
+
+    **MPP:** See [MPP Supported networks](/mpp/supported-networks).
   </Accordion>
 
   <Accordion title="Which tokens can I accept?">
-    Bridged USDC (`USDC.e`) on 0G Mainnet, which you can swap for via [hub.0g.ai](https://hub.0g.ai/swap?network=mainnet). 0G testnet has no official stablecoin yet — a Herald Protocol EIP-3009-compatible test token is on the roadmap.
+    **x402:** Bridged USDC (`USDC.e`) on 0G Mainnet via EIP-3009 `transferWithAuthorization`, plus any ERC-20 token via Permit2 gas sponsoring. Swap via [hub.0g.ai](https://hub.0g.ai/swap?network=mainnet). 0G testnet has no official stablecoin yet — a Herald Protocol EIP-3009-compatible test token is on the roadmap.
+
+    **MPP:** Bridged USDC (`USDC.e`) on 0G Mainnet via ERC-3009 `TransferWithAuthorization` (pull mode), or any ERC-20 token via standard `transfer` (push mode).
   </Accordion>
 
   <Accordion title="Does the facilitator hold funds?">
-    No. The facilitator verifies signed payment payloads and submits them to 0G. It never custodies funds. Settlement goes directly from buyer to the seller's `payTo` address onchain.
+    No. The x402 facilitator verifies signed payment payloads and submits them to 0G. It never custodies funds. Settlement goes directly from buyer to the seller's `payTo` address onchain.
   </Accordion>
 
   <Accordion title="Can I use any x402 or MPP SDK?">
-    Yes. The facilitator implements the standard `/verify`, `/settle`, and `/supported` endpoints, so any x402-compatible client or server library works. On the seller side, `@heraldprotocol/x402` wraps `@x402/evm` with 0G-aware money parsing so you can price endpoints in USD. For MPP, `@heraldprotocol/mpp` provides native 0G support with direct server-side settlement — no facilitator required.
+    **x402:** Yes. The facilitator implements the standard `/verify`, `/settle`, and `/supported` endpoints, so any x402-compatible client or server library works. On the seller side, `@heraldprotocol/x402` wraps `@x402/evm` with 0G-aware money parsing so you can price endpoints in USD.
+
+    **MPP:** Yes. `@heraldprotocol/mpp` provides native 0G support with direct server-side settlement — no facilitator required. The MPP protocol is framework-agnostic and works with any `mppx`-compatible adapter.
   </Accordion>
 
   <Accordion title="What is the Herald Router?">
@@ -42,6 +54,19 @@ description: Common questions about Herald Protocol, the 0G x402 facilitator, an
 
   <Accordion title="Does the router hold funds?">
     The router holds pre-funded wallets on each supported destination chain to settle outbound payments. Your agent sends payment to the router on 0G; the router bridges that value by paying the destination on your behalf from its own wallet.
+  </Accordion>
+
+  <Accordion title="What's the difference between x402 and MPP?">
+    Both solve machine payments over HTTP, but with different trade-offs:
+
+    | | x402 | MPP |
+    |---|---|---|
+    | **Settlement** | Facilitator broadcasts | Direct client-server |
+    | **Gas** | Facilitator pays | Client pays (push) or server pays (pull) |
+    | **Token support** | EIP-3009 + Permit2 (any ERC-20) | Any ERC-20 (push) or ERC-3009 (pull) |
+    | **Best for** | Gasless onboarding, hosted infra | Direct control, no third-party |
+
+    Use x402 when you want a hosted facilitator and Permit2 support. Use MPP when you want direct settlement without a middleman.
   </Accordion>
 
   <Accordion title="What's on the roadmap?">

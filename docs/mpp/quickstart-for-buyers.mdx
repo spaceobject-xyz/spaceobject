@@ -1,0 +1,107 @@
+---
+title: Quickstart for Buyers
+description: Pay for MPP-protected resources on 0G from a client or agent.
+---
+
+This guide shows how to call an MPP-protected endpoint from a Node.js client, with payments settling on 0G. The same pattern works for AI agents, scripts, or any program that can sign with a private key.
+
+## Prerequisites
+
+- A 0G-compatible EVM private key
+- A funded wallet on 0G Mainnet (USDC.e — swap via [hub.0g.ai](https://hub.0g.ai/swap?network=mainnet))
+- Node.js 18+
+
+## 1. Install dependencies
+
+<CodeGroup>
+
+```bash npm
+npm install @heraldprotocol/mpp mppx viem
+```
+
+```bash pnpm
+pnpm add @heraldprotocol/mpp mppx viem
+```
+
+```bash bun
+bun add @heraldprotocol/mpp mppx viem
+```
+
+</CodeGroup>
+
+<Note>
+  Buyers use `@heraldprotocol/mpp` on the client side to create an MPP-compatible client. The server is discovered automatically from the seller's `402` response.
+</Note>
+
+## 2. Create a signer
+
+Derive a signer from your private key with viem.
+
+```ts client.ts
+import { privateKeyToAccount } from "viem/accounts";
+
+const account = privateKeyToAccount(
+  process.env.CLIENT_PRIVATE_KEY as `0x${string}`,
+);
+```
+
+## 3. Create an MPP client
+
+Import `zerog` from `@heraldprotocol/mpp/client` and create an `Mppx` client instance. By default, JSON-RPC accounts (e.g. MetaMask) use **push** mode, while local accounts use **pull** mode. You can override this with the `mode` parameter.
+
+### For local accounts (pull mode — default)
+
+Pull mode signs an ERC-3009 `TransferWithAuthorization` message and sends it to the server. The server broadcasts the transaction. This requires an ERC-3009-compatible token like USDC.e.
+
+```ts client.ts
+import { zerog } from "@heraldprotocol/mpp/client";
+import { Mppx } from "mppx/client";
+
+const mppx = Mppx.create({
+  methods: [zerog({ account, mode: "pull" })],
+});
+
+const response = await mppx.fetch("http://localhost:3000/premium");
+const data = await response.json();
+console.log("Response:", data);
+```
+
+### For JSON-RPC accounts (push mode)
+
+Push mode broadcasts an ERC-20 `transfer` transaction directly and sends the tx hash to the server. This works with any ERC-20 token.
+
+```ts client.ts
+import { zerog } from "@heraldprotocol/mpp/client";
+import { Mppx } from "mppx/client";
+
+const mppx = Mppx.create({
+  methods: [zerog({ account, mode: "push" })],
+});
+
+const response = await mppx.fetch("http://localhost:3000/premium");
+const data = await response.json();
+console.log("Response:", data);
+```
+
+<Note>
+  The client account must be funded with USDC.e on 0G Mainnet for pull mode, or with USDC.e plus 0G native tokens for gas in push mode.
+</Note>
+
+## How it works
+
+`mppx.fetch` adds a transparent retry layer:
+
+1. The first request goes out with no payment.
+2. If the server returns `402`, the wrapper parses the challenge and picks a compatible payment method.
+3. It either signs a `TransferWithAuthorization` (pull) or broadcasts a `transfer` (push) and retries with the payment proof.
+4. The server verifies the payment on-chain and returns the resource.
+
+You never need to handle the 402 response manually — the client handles it transparently.
+
+## Client parameters reference
+
+| Parameter | Type | Description |
+|---|---|---|
+| `account` | `Account \| Address` | Wallet account for signing transactions |
+| `getClient` | `(params) => Client` | Custom viem client resolver by chain ID |
+| `mode` | `'push' \| 'pull'` | `push`: client broadcasts any ERC-20 `transfer` (default for JSON-RPC accounts). `pull`: client signs an ERC-3009 `TransferWithAuthorization` (default for local accounts). Push mode works with any ERC-20 token; pull mode requires an ERC-3009-compatible token. |

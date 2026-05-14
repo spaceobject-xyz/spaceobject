@@ -64,7 +64,8 @@
         "group": "MPP",
         "pages": [
           "mpp/overview",
-          "mpp/quickstart",
+          "mpp/quickstart-for-sellers",
+          "mpp/quickstart-for-buyers",
           "mpp/architecture",
           "mpp/supported-networks"
         ]

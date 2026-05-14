@@ -1,0 +1,96 @@
+---
+title: Quickstart for Sellers
+description: Charge for your API, MCP server, or agent using MPP on 0G.
+---
+
+This guide walks you through putting an MPP paywall in front of an HTTP endpoint using `@heraldprotocol/mpp`. The example uses [Hono](https://hono.dev), but the same pattern works with any framework supported by `mppx`.
+
+## Prerequisites
+
+- A 0G-compatible EVM wallet address to receive payments
+- Node.js 18+ (or any runtime with WebCrypto and `fetch`)
+- A server framework supported by `mppx/hono`
+- A funded 0G account to broadcast `transferWithAuthorization` transactions (pays gas)
+
+## 1. Install dependencies
+
+<CodeGroup>
+
+```bash npm
+npm install @heraldprotocol/mpp mppx hono viem
+```
+
+```bash pnpm
+pnpm add @heraldprotocol/mpp mppx hono viem
+```
+
+```bash bun
+bun add @heraldprotocol/mpp mppx hono viem
+```
+
+</CodeGroup>
+
+## 2. Set up the server
+
+Import `zerog` from `@heraldprotocol/mpp/server` and create an `Mppx` instance. The server needs an `account` to broadcast `transferWithAuthorization` transactions (it pays gas from this account).
+
+```ts server.ts
+import { zerog } from "@heraldprotocol/mpp/server";
+import { Hono } from "hono";
+import { Mppx } from "mppx/hono";
+import { privateKeyToAccount } from "viem/accounts";
+
+const account = privateKeyToAccount(
+  process.env.SERVER_PRIVATE_KEY as `0x${string}`,
+);
+
+const mppx = Mppx.create({
+  methods: [
+    zerog({
+      recipient: account.address,
+      account,
+    }),
+  ],
+});
+
+const app = new Hono();
+
+app.get("/premium", mppx.charge({ amount: "0.01" }), (c) =>
+  c.json({ data: "You have accessed premium content!" }),
+);
+
+export default {
+  port: 3000,
+  fetch: app.fetch,
+};
+```
+
+<Note>
+  The server `account` pays gas for `transferWithAuthorization`. It does not need to match the `recipient` address, but it must be funded with 0G native tokens.
+</Note>
+
+## 3. Test it
+
+Start your server and hit the protected route without a payment:
+
+```bash
+curl -i http://localhost:3000/premium
+```
+
+You should see a `402 Payment Required` response with a challenge describing the price, network, token, and recipient. Any MPP-compatible client can now pay this endpoint — see [Quickstart for Buyers](/mpp/quickstart-for-buyers).
+
+## Route configuration reference
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `recipient` | `string` | — | Address that receives payments |
+| `currency` | `string` | USDC.e | ERC-20 token contract address |
+| `decimals` | `number` | `6` | Token decimals |
+| `amount` | `string` | — | Default payment amount (human-readable) |
+| `account` | `Account \| Address` | — | Server wallet for broadcasting `transferWithAuthorization`. Required when accepting `authorization` payloads. |
+| `waitForConfirmation` | `boolean` | `true` | Wait for on-chain confirmation before returning receipt |
+| `store` | `Store` | In-memory | Store for signature replay protection |
+
+## Using another framework
+
+The only Herald Protocol-specific wiring is the `zerog` import from `@heraldprotocol/mpp/server`. The rest is standard MPP — swap `mppx/hono` for another `mppx` adapter and keep the same middleware contract.
