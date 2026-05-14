@@ -11,6 +11,7 @@ const mainSteps = [
 
 // biome-ignore lint/correctness/noUnusedVariables: used in Svelte template
 const destinations = [
+  "0G",
   "Base",
   "Arbitrum",
   "Solana",

@@ -249,7 +249,8 @@ onMount(() => {
       >
         The router proxies requests to any protected service. When it receives a
         402, it maps payment requirements to every supported network and rail —
-        from EVM chains to Solana, Stellar, Tempo, Stripe, and beyond.
+        from 0G to another EVM chains, Solana, Stellar, Tempo, Stripe, and
+        beyond.
       </p>
     </div>
 
