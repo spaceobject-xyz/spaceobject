@@ -22,7 +22,7 @@ const destination = "http://localhost:3000/weather";
 
 // Make request — payment is handled automatically via the router
 const response = await fetchWithPayment(
-  `${ROUTER_URL}/route?url=${encodeURIComponent(destination)}`,
+  `${ROUTER_URL}/route/x402?url=${encodeURIComponent(destination)}`,
   {
     method: "GET",
     headers: {

@@ -39,7 +39,7 @@ The client calls the router, which proxies to `/weather`, handles the 402 challe
 
 ## How it works
 
-1. Client sends request to `https://router.heraldprotocol.xyz/route?url=http://localhost:3000/weather`.
+1. Client sends request to `https://router.heraldprotocol.xyz/route/x402?url=http://localhost:3000/weather`.
 2. Router proxies to the server and gets `402 Payment Required` (Base USDC).
 3. Router re-presents the payment requirements mapped to 0G USDC.e.
 4. Client signs a 0G payment and retries with `PAYMENT-SIGNATURE`.

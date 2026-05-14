@@ -16,8 +16,8 @@ app.use(logger()).use(trimTrailingSlash()).use(cors());
 
 app.get("/", (c) =>
   c.json({
-    title: "heraldprotocol — 0G x402 router",
-    availableEndpoints: ["/route - Route x402 service"],
+    title: "heraldprotocol — cross-chain payment router",
+    availableEndpoints: ["/route/x402 - Route x402 payments"],
   })
 );
 

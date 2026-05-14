@@ -45,7 +45,7 @@ export const NETWORK_TOKEN_MAPPING = {
 } as const satisfies Record<SupportedNetwork, Stablecoin>;
 
 routeHandler.all(
-  "/",
+  "/x402",
   zValidator(
     "query",
     z.object({
