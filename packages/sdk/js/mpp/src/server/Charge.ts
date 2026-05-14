@@ -204,9 +204,9 @@ export function charge(parameters: charge.Parameters = {}): Method.AnyServer {
             );
           }
 
-          const hash = keccak256(signature as `0x${string}`);
-          await assertHashUnused(store, hash);
-          await markHashUsed(store, hash);
+          const signatureHash = keccak256(signature as `0x${string}`);
+          await assertHashUnused(store, signatureHash);
+          await markHashUsed(store, signatureHash);
 
           const hash = await sendTransaction(client, {
             account: serverAccount,
