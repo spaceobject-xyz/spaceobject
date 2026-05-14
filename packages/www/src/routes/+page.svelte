@@ -302,7 +302,7 @@ onMount(() => {
     </div>
 
     <div
-      class="grid grid-cols-1 md:grid-cols-[1fr_1px_1fr_1px_1fr] gap-0 md:gap-[clamp(1.5rem,3vw,3rem)] items-stretch"
+      class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr] gap-0 md:gap-[clamp(1.5rem,3vw,3rem)] items-stretch"
     >
       <article
         data-enter
@@ -314,11 +314,11 @@ onMount(() => {
           x402
         </h3>
         <p
-          class="font-sans text-[0.95rem] leading-[1.6] text-fg max-w-[38ch] flex-1"
+          class="font-sans text-[0.95rem] leading-[1.6] text-fg max-w-[30ch] flex-1"
         >
           Add the Herald facilitator to your server. Charge per request, per
-          call, per artifact. Works with any x402 client. Settles on 0G in
-          USDC.e.
+          call, per artifact. Works with any x402 client. Settles on 0G in any
+          ERC20 token.
         </p>
         <a
           href="https://docs.heraldprotocol.xyz/x402/quickstart-for-sellers"
@@ -334,10 +334,36 @@ onMount(() => {
         </a>
       </article>
 
-      <span
-        aria-hidden="true"
-        class="bg-line w-full h-px my-7 md:w-px md:h-auto md:my-0"
-      ></span>
+      <article
+        data-enter
+        class="flex flex-col gap-4 min-h-full opacity-0 translate-y-2 transition-[opacity,translate] duration-420 ease-[cubic-bezier(0.23,1,0.32,1)] delay-160 will-change-[opacity,translate] [&.is-in]:opacity-100 [&.is-in]:translate-y-0 motion-reduce:translate-none"
+      >
+        <h3
+          class="font-mono font-bold uppercase text-heading text-[clamp(1.4rem,2vw,1.75rem)] leading-[1.05] tracking-[-0.01em]"
+        >
+          MPP
+        </h3>
+        <p
+          class="font-sans text-[0.95rem] leading-[1.6] text-fg max-w-[30ch] flex-1"
+        >
+          Add MPP payment requirements to your server. Charge per request, per
+          call, per artifact. Works with any MPP client. Settles directly
+          on-chain — verify and broadcast payments yourself, no facilitator
+          required.
+        </p>
+        <a
+          href="https://docs.heraldprotocol.xyz/mpp/quickstart-for-sellers"
+          target="_blank"
+          rel="noopener"
+          class="group mt-[0.4rem] font-mono font-medium text-[0.85rem] text-heading no-underline tracking-[0.02em] transition-opacity duration-120 ease-out inline-flex items-center gap-[0.6rem] self-start hover:opacity-70 active:opacity-50"
+        >
+          <span
+            class="font-mono text-muted transition-[translate,color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-0.75 group-hover:text-heading"
+            >→</span
+          >
+          Quickstart for sellers
+        </a>
+      </article>
 
       <article
         data-enter
@@ -349,14 +375,15 @@ onMount(() => {
           Router
         </h3>
         <p
-          class="font-sans text-[0.95rem] leading-[1.6] text-fg max-w-[38ch] flex-1"
+          class="font-sans text-[0.95rem] leading-[1.6] text-fg max-w-[30ch] flex-1"
         >
           Pay any protected service (HTTP 402) from anywhere without bridging.
           The router accepts payment on 0G and forwards on the destination
-          server or chain.
+          server or chain. MPP routing coming soon — settle on blockchain,
+          Tempo, Stripe, card, or other fiat rails.
         </p>
         <a
-          href="https://docs.heraldprotocol.xyz/router/quickstart"
+          href="https://docs.heraldprotocol.xyz/router/overview"
           target="_blank"
           rel="noopener"
           class="group mt-[0.4rem] font-mono font-medium text-[0.85rem] text-heading no-underline tracking-[0.02em] transition-opacity duration-120 ease-out inline-flex items-center gap-[0.6rem] self-start hover:opacity-70 active:opacity-50"
@@ -365,29 +392,8 @@ onMount(() => {
             class="font-mono text-muted transition-[translate,color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-0.75 group-hover:text-heading"
             >→</span
           >
-          Quickstart for the router
+          Overview
         </a>
-      </article>
-
-      <span
-        aria-hidden="true"
-        class="bg-line w-full h-px my-7 md:w-px md:h-auto md:my-0"
-      ></span>
-
-      <article
-        data-enter
-        class="flex flex-col gap-4 min-h-full opacity-0 translate-y-2 transition-[opacity,translate] duration-420 ease-[cubic-bezier(0.23,1,0.32,1)] delay-160 will-change-[opacity,translate] [&.is-in]:opacity-100 [&.is-in]:translate-y-0 motion-reduce:translate-none"
-      >
-        <h3
-          class="font-mono font-bold uppercase text-heading text-[clamp(1.4rem,2vw,1.75rem)] leading-[1.05] tracking-[-0.01em]"
-        >
-          MPP
-        </h3>
-        <p
-          class="font-sans text-[0.95rem] leading-[1.6] text-muted max-w-[38ch] flex-1"
-        >
-          Coming soon
-        </p>
       </article>
     </div>
   </div>
