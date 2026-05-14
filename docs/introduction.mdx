@@ -11,21 +11,27 @@ Herald Protocol ships the economic rails for agent-native apps on [0G Chain](htt
   <Card title="x402 on 0G" icon="bolt" href="/x402/overview">
     Any API, MCP server, or AI agent can accept onchain payments on 0G via x402 — no middlemen, no off-chain escrow.
   </Card>
+  <Card title="MPP on 0G" icon="credit-card" href="/mpp/overview">
+    Native MPP payment method for 0G Chain. Direct server-side settlement with no facilitator required.
+  </Card>
   <Card title="Cross-Chain Router" icon="route" href="/router/overview">
-    Agents hold funds on 0G and pay any x402-protected service across supported chains. One wallet, multiple destinations.
+    Agents hold funds on 0G and pay any x402 or MPP protected service across supported chains. One wallet, multiple destinations.
   </Card>
 </CardGroup>
 
-## x402 payments
+## x402 & MPP payments
 
-**Agent payments are live on 0G Mainnet**, powered by [x402](https://x402.org). Any API, MCP server, or AI agent can accept payments through the Herald Protocol facilitator — drop-in compatible with the x402 spec.
+**Agent payments are live on 0G Mainnet** via both [x402](https://x402.org) and [MPP](https://mpp.dev). Any API, MCP server, or AI agent can accept payments through the Herald Protocol facilitator — drop-in compatible with the x402 spec — or use MPP for direct server-side settlement without a facilitator.
 
 <CardGroup cols={2}>
-  <Card title="Quickstart for Sellers" icon="server" href="/x402/quickstart-for-sellers">
+  <Card title="x402 Quickstart for Sellers" icon="server" href="/x402/quickstart-for-sellers">
     Add x402 payments to your API, MCP server, or agent.
   </Card>
-  <Card title="Quickstart for Buyers" icon="credit-card" href="/x402/quickstart-for-buyers">
+  <Card title="x402 Quickstart for Buyers" icon="credit-card" href="/x402/quickstart-for-buyers">
     Pay for x402-protected resources from your client or agent.
+  </Card>
+  <Card title="MPP Quickstart" icon="credit-card" href="/mpp/quickstart">
+    Charge for your API or agent using MPP on 0G.
   </Card>
   <Card title="Facilitator" icon="shield-check" href="/x402/facilitator">
     Learn how the Herald Protocol facilitator verifies and settles payments.
@@ -46,7 +52,7 @@ Herald Protocol ships the economic rails for agent-native apps on [0G Chain](htt
   <Card title="Router Quickstart (x402)" icon="play" href="/router/quickstart-x402">
     Make a cross-chain x402 payment from 0G in minutes.
   </Card>
-  <Card title="Router Quickstart (MPP)" icon="clock" href="/router/quickstart-mpp">
+  <Card title="Router Quickstart (MPP)" icon="play" >
     MPP routing — coming soon.
   </Card>
 </CardGroup>

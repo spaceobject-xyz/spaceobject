@@ -5,7 +5,7 @@ description: Common questions about Herald Protocol, the 0G x402 facilitator, an
 
 <AccordionGroup>
   <Accordion title="What is Herald Protocol?">
-    Herald Protocol is the infrastructure for the agentic economy on 0G Chain. It ships an x402 facilitator so any API, MCP server, or agent can accept onchain payments on 0G, and a cross-chain payment router so agents holding funds on 0G can pay services on other chains without managing multiple wallets.
+    Herald Protocol is the infrastructure for the agentic economy on 0G Chain. It ships an x402 facilitator so any API, MCP server, or agent can accept onchain payments on 0G, an MPP SDK for direct server-side settlement without a facilitator, and a cross-chain payment router so agents holding funds on 0G can pay services on other chains without managing multiple wallets.
   </Accordion>
 
   <Accordion title="What is x402?">
@@ -28,8 +28,8 @@ description: Common questions about Herald Protocol, the 0G x402 facilitator, an
     No. The facilitator verifies signed payment payloads and submits them to 0G. It never custodies funds. Settlement goes directly from buyer to the seller's `payTo` address onchain.
   </Accordion>
 
-  <Accordion title="Can I use any x402 SDK?">
-    Yes. The facilitator implements the standard `/verify`, `/settle`, and `/supported` endpoints, so any x402-compatible client or server library works. On the seller side, `@heraldprotocol/x402` wraps `@x402/evm` with 0G-aware money parsing so you can price endpoints in USD.
+  <Accordion title="Can I use any x402 or MPP SDK?">
+    Yes. The facilitator implements the standard `/verify`, `/settle`, and `/supported` endpoints, so any x402-compatible client or server library works. On the seller side, `@heraldprotocol/x402` wraps `@x402/evm` with 0G-aware money parsing so you can price endpoints in USD. For MPP, `@heraldprotocol/mpp` provides native 0G support with direct server-side settlement — no facilitator required.
   </Accordion>
 
   <Accordion title="What is the Herald Router?">
@@ -45,6 +45,7 @@ description: Common questions about Herald Protocol, the 0G x402 facilitator, an
   </Accordion>
 
   <Accordion title="What's on the roadmap?">
+    - [x] **MPP SDK for 0G** — Native MPP payment method with `@heraldprotocol/mpp` for direct server-side settlement
     - [x] **Accept any ERC-20 as payment** — supports `Permit2` gas sponsoring to enable any ERC-20 payments
     - [ ] **More router destination chains** — Arbitrum, Solana, Stellar and beyond
     - [ ] **MPP on Router** — Route MPP payments through the Herald Router. Agents pay on 0G; the router settles via Tempo, Stripe, card, or other fiat rails on the destination side.
