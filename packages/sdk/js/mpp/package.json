@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@heraldprotocol/mpp",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "0G Chain payment method for the Machine Payments Protocol",
   "repository": {
     "type": "git",
@@ -14,16 +14,34 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/esm/index.d.ts",
-      "default": "./dist/esm/index.js"
-    },
-    "./client": {
-      "types": "./dist/esm/client/index.d.ts",
-      "default": "./dist/esm/client/index.js"
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
     },
     "./server": {
-      "types": "./dist/esm/server/index.d.ts",
-      "default": "./dist/esm/server/index.js"
+      "import": {
+        "types": "./dist/esm/server.d.ts",
+        "default": "./dist/esm/server.js"
+      },
+      "require": {
+        "types": "./dist/cjs/server.d.ts",
+        "default": "./dist/cjs/server.js"
+      }
+    },
+    "./client": {
+      "import": {
+        "types": "./dist/esm/client.d.ts",
+        "default": "./dist/esm/client.js"
+      },
+      "require": {
+        "types": "./dist/cjs/client.d.ts",
+        "default": "./dist/cjs/client.js"
+      }
     }
   },
   "main": "./dist/esm/index.js",
