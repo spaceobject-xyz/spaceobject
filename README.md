@@ -18,29 +18,29 @@ AI agents need to pay and get paid without humans in the loop. Herald ships the 
 
 ## Live on 0G Mainnet
 
-**Agent payments are live on 0G Chain**, powered by [x402](https://x402.org) as the first supported rail. Any API, MCP server, or AI agent can accept onchain payments through our facilitator — no middlemen, no off-chain escrow, just HTTP + settlement on 0G.
+### x402
 
-- **Facilitator URL:** https://facilitator.heraldprotocol.xyz/
-- **Supported tokens:** USDC.e (EIP-3009) and **any ERC-20 via Permit2** — swap via [hub.0g.ai](https://hub.0g.ai/swap?network=mainnet)
-- **Drop-in compatible** with the x402 spec — plug it into any HTTP server or agent client
-- **Gasless onboarding** — EIP-2612 and ERC-20 approval gas sponsoring so buyers don't need native tokens
+**Agent payments are live on 0G Chain**, powered by [x402](https://x402.org/) as the first supported rail. Any API, MCP server, or AI agent can accept onchain payments through our facilitator — no middlemen, no off-chain escrow, just HTTP + settlement on 0G.
+- **Facilitator URL**: https://facilitator.heraldprotocol.xyz/
+- **Supported token**: USDC.e — swap via [hub.0g.ai](https://hub.0g.ai/) or Any ERC20 token via Uniswap `Permit2`
+- **Drop-in compatible with the x402 spec** — plug it into any HTTP server or agent client
 
-> There's no official USDC testnet on 0G right now, which makes the dev loop painful. We're shipping our own EIP-3009-compatible test token so you can build and test x402 flows end-to-end.
+Quickstart: https://docs.heraldprotocol.xyz/x402/quickstart-for-sellers
 
-## Cross-Chain Payment Router
+### MPP
 
-Not every service accepts payment on 0G. The **Herald Router** bridges that gap: agents hold funds on 0G and pay any x402-protected service across supported routes, without juggling multiple chains or bridging manually.
+Provides a native [MPP](https://mpp.dev/) payment method for 0G Chain, so agents can transact via MPP protocol with ERC20 tokens on 0G Chain.
+- **JS SDK**: [@heraldprotocol/mpp](https://www.npmjs.com/package/@heraldprotocol/mpp)
+- **Supported token**: USDC.e (via pull mode) or Any ERC20 token (via push mode)
+- **Drop-in compatible with the MPP spec**
 
-- Pay from 0G, settle wherever the service lives
-- One wallet, one balance, multiple destination chains
-- Same x402 interface — the router handles the cross-chain mechanics
+Quickstart: https://docs.heraldprotocol.xyz/mpp/quickstart-for-sellers
 
-## Roadmap
+### Payment Router
 
-- ~~**Permit2 gas sponsoring** — accept any ERC-20 as payment, no native token required from the payer~~
-- ~~**[mpp](https://mpp.dev) support** — native integration with the machine payment protocol for broader agent-to-agent payment interoperability~~
-- ~~**EIP-3009 test token on 0G** — unblock the dev loop until an official USDC testnet lands~~ Wait for official USDC testnet
-- **More payment rails** — additional settlement protocols beyond x402, so agents can pay however the counterparty expects
+Not every service accepts payment on 0G. The Herald Router bridges that gap: agents hold funds on 0G and pay any x402 or MPP protected service across supported routes, without juggling multiple chains or bridging manually.
+
+Read more: https://docs.heraldprotocol.xyz/router/overview
 
 ## Why 0G?
 
