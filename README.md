@@ -42,9 +42,86 @@ Not every service accepts payment on 0G. The Herald Router bridges that gap: age
 
 Read more: https://docs.heraldprotocol.xyz/router/overview
 
+## Architecture
+
+### x402 / MPP Payment Flow
+
+```
+👤 User Request
+      │
+      ▼
+🔒 402 Payment Required  ◄──── Seller (API / MCP server)
+      │
+      ▼
+💳 Pay with USDC (via x402 or MPP)
+      │
+      │
+      ▼
+✅ Receive Data
+```
+
+The client attaches a signed payment to its request; the **facilitator** or server verifies the signature and settles the transfer on-chain before the seller unlocks the resource.
+
+### Router Flow
+
+```
+👤 User Request
+      │
+      ▼
+🔀 Router Proxies  (Herald Router)
+      │
+      ▼
+🌐 402 + Map Networks
+      │
+      ├── 0G ── Base ── Arbitrum ── Solana ── Stellar ── …
+      │
+      ▼
+💸 Pay & Forward
+      │  Agent's funds on 0G; Router handles cross-chain payment
+      ▼
+✅ Receive Data
+```
+
+The Router lets an agent hold funds on 0G and pay any x402 or MPP protected service across supported chains — no manual bridging.
+
+## 0G Chain Integration
+
+Herald Protocol is built on **0G Chain** as the settlement layer. Currently only the 0G Chain component is in use:
+
+| Component | Role | Problem it solves |
+|---|---|---|
+| **0G Chain** | Settlement layer | Sub-second finality lets micropayments settle before an HTTP response times out |
+| **ERC-3009** | Off-chain token authorization | Payer signs a transfer off-chain; the facilitator or server submits the single on-chain tx, so no separate approval step is needed |
+| **Uniswap Permit2** | Universal token approval router | Allows any ERC-20 (beyond USDC) via a single Permit2 signature |
+
 ## Why 0G?
 
 0G is an EVM-compatible L1 with sub-second finality, decentralized storage, and a compute marketplace — a natural home for agent-native apps. Herald gives those agents the economic rails to transact and get paid from day one.
+
+## Tech Stack
+
+| Tool | Purpose |
+|---|---|
+| **Bun** | Package manager & runtime |
+| **TypeScript** | Language |
+| **Turbo** | Monorepo task orchestration |
+| **Biome** | Linting & formatting |
+| **tsup** | SDK bundler |
+| **Wrangler** | Cloudflare Workers deployment (facilitator, router) |
+| **Husky** | Git hooks |
+
+## Scripts
+
+Run from the project root:
+
+| Script | Description |
+|---|---|
+| `bun run build` | Build all packages |
+| `bun run dev` | Start all packages in dev mode |
+| `bun run typecheck` | Type-check all packages |
+| `bun run lint` | Lint all packages |
+
+The [`examples/`](./examples) directory contains runnable reference implementations.
 
 ## Links
 
