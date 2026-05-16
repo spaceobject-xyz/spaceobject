@@ -34,6 +34,18 @@ const response = await fetchWithPayment(
 const data = await response.json();
 console.log("Response:", data);
 
+type HeraldRouterExtensionResponse = {
+  "heraldprotocol-router": {
+    url: string;
+    settlement: {
+      success: boolean;
+      payer: string;
+      transaction: string;
+      network: string;
+    };
+  };
+};
+
 // Get payment receipt from response headers
 if (response.ok) {
   const httpClient = new x402HTTPClient(client);
@@ -43,6 +55,15 @@ if (response.ok) {
 
   const { extensions, ...settled } = paymentResponse;
 
-  console.log("Payment settled:", settled);
-  console.log("Extensions:", extensions);
+  console.log(
+    "Transaction hash:",
+    `https://chainscan.0g.ai/tx/${settled.transaction}`
+  );
+  console.log(
+    "Destination transaction hash:",
+    `https://basescan.org/tx/${
+      (extensions as HeraldRouterExtensionResponse)["heraldprotocol-router"]
+        .settlement.transaction
+    }`
+  );
 }

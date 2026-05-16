@@ -24,7 +24,7 @@ app.use(logger());
 
 app.get("/", (c) => c.text("0G MPP Example Server"));
 
-app.get("/weather", mppx.charge!({ amount: "0.00002" }), (c) =>
+app.get("/weather", mppx.charge!({ amount: "0.001" }), (c) =>
   c.json({
     report: {
       weather: "sunny",

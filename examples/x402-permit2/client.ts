@@ -42,5 +42,8 @@ if (response.ok) {
   const paymentResponse = httpClient.getPaymentSettleResponse((name) =>
     response.headers.get(name)
   );
-  console.log("Payment settled:", paymentResponse);
+  console.log(
+    "Transaction hash:",
+    `https://chainscan.0g.ai/tx/${paymentResponse.transaction}`
+  );
 }
