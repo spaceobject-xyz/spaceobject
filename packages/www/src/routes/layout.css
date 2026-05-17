@@ -9,6 +9,10 @@
   --heading: oklch(94% 0.009 240);
   --accent: oklch(78% 0.13 305);
 
+  --syntax-class: oklch(86% 0.11 78);
+  --syntax-string: oklch(80% 0.13 148);
+  --syntax-fn: oklch(80% 0.1 230);
+
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -21,6 +25,9 @@
   --color-fg: var(--fg);
   --color-heading: var(--heading);
   --color-accent: var(--accent);
+  --color-syntax-class: var(--syntax-class);
+  --color-syntax-string: var(--syntax-string);
+  --color-syntax-fn: var(--syntax-fn);
   --font-mono: var(--mono);
   --font-sans: var(--sans);
 }
